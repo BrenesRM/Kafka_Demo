@@ -1,6 +1,7 @@
 from confluent_kafka import Consumer, KafkaError
 import os
 import json
+import time
 
 def main():
     bootstrap_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka-svc.kafka-lab.svc.cluster.local:9092')
@@ -20,22 +21,29 @@ def main():
 
     try:
         while True:
-            msg = consumer.poll(1.0)
+            try:
+                msg = consumer.poll(1.0)
 
-            if msg is None:
-                continue
-            if msg.error():
-                if msg.error().code() == KafkaError._PARTITION_EOF:
+                if msg is None:
                     continue
-                else:
-                    print(f"Consumer error: {msg.error()}")
-                    break
+                if msg.error():
+                    if msg.error().code() == KafkaError._PARTITION_EOF:
+                        print(f"Reached end of partition: {msg.error()}", flush=True)
+                        continue
+                    else:
+                        print(f"Consumer error: {msg.error()}", flush=True)
+                        # Don't break on transient errors, let it retry
+                        continue
 
-            print(f"Received message: {msg.value().decode('utf-8')}", flush=True)
+                print(f"Received message: {msg.value().decode('utf-8')}", flush=True)
+            except Exception as e:
+                print(f"Unexpected error in poll loop: {e}", flush=True)
+                time.sleep(1) # Brief pause before retrying
     except KeyboardInterrupt:
-        pass
+        print("Consumer stopping via KeyboardInterrupt", flush=True)
     finally:
         consumer.close()
+        print("Consumer closed.", flush=True)
 
 if __name__ == "__main__":
     main()
