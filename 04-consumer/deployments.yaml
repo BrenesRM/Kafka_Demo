@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-producer
+  namespace: kafka-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-producer
+  template:
+    metadata:
+      labels:
+        app: kafka-producer
+    spec:
+      containers:
+        - name: producer
+          image: apache/kafka:3.7.0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Waiting for Kafka..."
+              sleep 10
+              echo "Starting Producer Loop..."
+              seq 1 10000 | while read i; do
+                echo "Message $i from producer" | /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC
+                sleep 5
+              done
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-svc.kafka-lab.svc.cluster.local:9092"
+            - name: KAFKA_TOPIC
+              value: "kafka_lab_test_nubeprivada"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-consumer
+  namespace: kafka-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer
+    spec:
+      containers:
+        - name: consumer
+          image: apache/kafka:3.7.0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Waiting for Kafka..."
+              sleep 10
+              echo "Starting Consumer..."
+              /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC --from-beginning
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-svc.kafka-lab.svc.cluster.local:9092"
+            - name: KAFKA_TOPIC
+              value: "kafka_lab_test_nubeprivada"
