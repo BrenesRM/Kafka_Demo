@@ -58,6 +58,12 @@ spec:
               value: "9997"
             - name: KAFKA_JMX_OPTS
               value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-svc.kafka-lab.svc.cluster.local -Dcom.sun.management.jmxremote.rmi.port=9997"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+              value: "1"
           ports:
             - containerPort: 9092
             - containerPort: 9093
