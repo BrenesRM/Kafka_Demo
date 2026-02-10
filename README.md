@@ -3,6 +3,18 @@
 ## Overview
 This lab demonstrates a local Kafka deployment on Kubernetes using Docker Desktop.
 
+## The Shared Responsibility Model
+In a healthy Kafka ecosystem, responsibilities should be split based on Infrastructure (The Pipeline) vs. Data (The Water).
+
+| Feature | Ops / SysAdmin (Platform) | Dev (Application) |
+| :--- | :--- | :--- |
+| Infrastructure | Provisioning (Terraform), Broker tuning, Disk I/O | N/A |
+| Cluster Health | Monitoring (Prometheus/Grafana), Alerting | N/A |
+| Topic Management | Setting "Guardrails" (Max partition limits) | Creating Topics (via GitOps or API) |
+| Security | TLS Encryption, SASL/IAM Authentication | Defining ACLs (who can read/write) |
+| Data Logic | N/A | Schema Evolution, Consumer Group logic |
+| Performance | OS-level tuning, Zookeeper/KRaft health | Producer batching, Consumer lag fixing |
+
 ## Project Structure
 The project is organized into the following directories:
 
