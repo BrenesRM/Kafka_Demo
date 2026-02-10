@@ -9,6 +9,7 @@ spec:
       containers:
         - name: kafka-topic-creator
           image: apache/kafka:3.7.0
+          imagePullPolicy: IfNotPresent
           command:
             - /opt/kafka/bin/kafka-topics.sh
             - --create

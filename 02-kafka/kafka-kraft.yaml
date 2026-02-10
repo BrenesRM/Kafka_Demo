@@ -11,6 +11,8 @@ spec:
       name: inner
     - port: 9093
       name: controller
+    - port: 9997
+      name: jmx
   selector:
     app: kafka
   clusterIP: None # Headless service for KRaft
@@ -52,6 +54,10 @@ spec:
               value: "1@127.0.0.1:9093"
             - name: CLUSTER_ID
               value: "L629Z6wRRE67O_bI5q3WvA"
+            - name: KAFKA_JMX_PORT
+              value: "9997"
+            - name: KAFKA_JMX_OPTS
+              value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-svc.kafka-lab.svc.cluster.local -Dcom.sun.management.jmxremote.rmi.port=9997"
           ports:
             - containerPort: 9092
             - containerPort: 9093

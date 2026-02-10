@@ -7,7 +7,7 @@ This lab demonstrates a local Kafka deployment on Kubernetes using Docker Deskto
 The project is organized into the following directories:
 
 *   **01-prep**: Contains namespace creation resources (`namespace.yaml`).
-*   **02-kafka**: Contains Kafka resources including KRaft configurations (`kafka-kraft.yaml`) and topic initialization (`topic-init.yaml`).
+*   **02-kafka**: Contains Kafka resources including KRaft configurations (`kafka-kraft.yaml`), UI console (`kafka-ui.yaml`), and topic initialization (`topic-init.yaml`).
 *   **03-producer**: Python-based Kafka producer application.
     *   `app.py`: Logic to send JSON messages with timestamps to the Kafka topic.
     *   `Dockerfile`: Build instructions for the producer image.
@@ -44,7 +44,10 @@ Verification was performed on the existing deployment.
 *   Consumer: Running
 
 **Service Status:**
-`kafka-svc` is available on ports 9092/9093.
+`kafka-svc` is available on ports 9092/9093. `kafka-ui-svc` is available on port 8080 (30080 NodePort).
+
+**Metrics Status:**
+JMX Metrics are enabled on port 9997 and integrated with the UI.
 
 **Log Verification:**
 *   **Producer**: Successfully connecting to bootstrap servers and entering the production loop (`Starting Producer Loop...`).
@@ -59,7 +62,6 @@ Verification was performed on the existing deployment.
 6. **Cleanup**: Resource removal.
 
 ## Quick Start
-## Quick Start
 
 ### Windows (PowerShell)
 ```powershell
@@ -69,6 +71,16 @@ Verification was performed on the existing deployment.
 # Phase 5: Verify
 .\verify-lab.ps1
 ```
+
+### 🌐 Accessing the UI
+- **Kafka UI Console**: [http://localhost:30080](http://localhost:30080)
+
+> [!TIP]
+> **Troubleshooting UI Access**: If the link above does not work in your browser, it may be due to local Docker Desktop networking constraints. You can use the following command to create a direct tunnel:
+> ```powershell
+> kubectl port-forward svc/kafka-ui-svc 8080:8080 -n kafka-lab
+> ```
+> Then access it at [http://localhost:8080](http://localhost:8080).
 
 ### Linux/Mac (Bash)
 ```bash
