@@ -15,6 +15,25 @@ In a healthy Kafka ecosystem, responsibilities should be split based on Infrastr
 | Data Logic | N/A | Schema Evolution, Consumer Group logic |
 | Performance | OS-level tuning, Zookeeper/KRaft health | Producer batching, Consumer lag fixing |
 
+### Why you should NOT "Delegate All" to Dev
+Kafka is a stateful distributed system. Unlike a stateless container that you can just "restart," Kafka depends heavily on:
+
+- **Disk Performance**: Devs might not realize how a specific compression codec or a high `min.insync.replicas` count affects I/O.
+- **Partition Management**: If Devs create 10,000 partitions for a tiny service, they can kill the controller's performance.
+- **Stability**: You, as the SysAdmin, are the one who gets paged at 3:00 AM when the disk is full. You must own the retention policies and resource quotas.
+
+### Why you should NOT "Separate Everything"
+If a Developer has to open a Jira ticket and wait three days just to create a topic or update a schema, they will find ways to bypass your "best practices."
+
+### The Hybrid Approach (The Sweet Spot)
+- **You (Ops/IaC)**: Build the "vending machine." Use Terraform or a Kubernetes Operator (like Strimzi) to define how a cluster looks.
+- **Them (Dev)**: Use the "vending machine." They provide a YAML file or a Pull Request that defines their topic name and partition count. Your CI/CD pipeline checks if their request follows your rules before applying it.
+
+### The Verdict
+Do not delegate all. **Delegate the Configuration, but retain the Governance.**
+
+You provide the stable, secure, and monitored "playing field" (The Kafka Cluster). The developers are responsible for the "game" (The Producers, Consumers, and Topics) played within the boundaries you set.
+
 ## Project Structure
 The project is organized into the following directories:
 
