@@ -1,0 +1,110 @@
+You are a senior DevOps, Kafka, Kubernetes, and Infrastructure as Code (IaC) instructor.
+
+Your task is to generate a fully reproducible LOCAL LAB environment for a Proof of Concept (POC) class, designed to run on a developer laptop using Docker Desktop with Kubernetes enabled.
+
+LAB OBJECTIVE:
+Demonstrate how a sysadmin using Infrastructure as Code can deploy, configure, and validate Apache Kafka running in Kubernetes, and how two Docker-based applications communicate as a Producer and Consumer using a Kafka topic.
+
+ENVIRONMENT CONSTRAINTS:
+- Local laptop
+- Docker Desktop
+- Kubernetes enabled in Docker Desktop
+- No cloud providers
+- Minimal resource usage
+- Educational / POC oriented
+
+LAB REQUIREMENTS:
+
+1. KAFKA DEPLOYMENT
+   - Deploy Apache Kafka in Kubernetes using IaC principles
+   - Use Kubernetes manifests (YAML) or Helm (preferred if justified)
+   - Include:
+     - Zookeeper (or KRaft mode if simpler for local)
+     - Kafka Broker
+     - Service definitions (ClusterIP)
+   - Kafka must expose a topic named:
+     kafka_lab_test_nubeprivada
+
+2. PRODUCER & CONSUMER CONTAINERS
+   - Create TWO Docker containers:
+     - kafka-producer
+     - kafka-consumer
+   - They must:
+     - Be deployed as Kubernetes Pods or Deployments
+     - Connect to Kafka via internal Kubernetes networking
+     - Use environment variables for Kafka bootstrap servers and topic name
+   - Producer sends test messages periodically
+   - Consumer logs received messages to stdout
+
+3. INFRASTRUCTURE AS CODE FOCUS
+   - Everything must be defined as code:
+     - Kubernetes YAML
+     - Dockerfiles (if needed)
+     - Optional Makefile or bash scripts
+   - Emphasize sysadmin visibility:
+     - Services
+     - Pods
+     - Logs
+     - Scaling concepts (even if not applied)
+
+4. LAB STRUCTURE (CLASS / POC STYLE)
+   Provide the lab in clearly separated phases:
+
+   PHASE 1 – Environment Preparation
+   - Enable Kubernetes in Docker Desktop
+   - Verify kubectl access
+   - Namespace creation
+
+   PHASE 2 – Kafka Deployment
+   - Apply Kafka manifests
+   - Verify broker and zookeeper status
+   - Create Kafka topic kafka_lab_test_nubeprivada
+
+   PHASE 3 – Producer Deployment
+   - Deploy producer container
+   - Verify message publishing
+
+   PHASE 4 – Consumer Deployment
+   - Deploy consumer container
+   - Verify message consumption
+
+   PHASE 5 – Validation & Troubleshooting
+   - kubectl commands to inspect:
+     - Pods
+     - Services
+     - Logs
+   - Common failure points and fixes
+
+   PHASE 6 – Cleanup
+   - Remove all resources cleanly
+
+5. TEST CASES (FOR DEMO)
+   Include explicit test cases such as:
+   - TC-01: Kafka broker is reachable inside cluster
+   - TC-02: Producer successfully publishes messages
+   - TC-03: Consumer receives messages in correct order
+   - TC-04: Topic persistence validation
+   - TC-05: Restart producer/consumer and validate recovery
+
+6. OUTPUT FORMAT
+   - Provide:
+     - Directory structure
+     - YAML examples
+     - Dockerfile examples (if applicable)
+     - kubectl commands
+     - Expected outputs
+   - Explanations must be sysadmin-oriented, not application-developer-focused
+
+7. TEACHING STYLE
+   - Clear
+   - Step-by-step
+   - Minimal magic
+   - Explain WHY each component exists
+   - Suitable for explaining live to coworkers in a POC session
+
+FINAL GOAL:
+By the end of the lab, coworkers should clearly understand:
+- How Kafka runs in Kubernetes
+- How Docker-based producers/consumers communicate via Kafka
+- How IaC enables repeatable infrastructure
+- How to observe, validate, and troubleshoot Kafka as a sysadmin

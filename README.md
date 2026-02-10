@@ -1,0 +1,87 @@
+# Kafka Kubernetes POC Lab
+
+## Overview
+This lab demonstrates a local Kafka deployment on Kubernetes using Docker Desktop.
+
+## Project Structure
+The project is organized into the following directories:
+
+*   **01-prep**: Contains namespace creation resources (`namespace.yaml`).
+*   **02-kafka**: Contains Kafka resources including KRaft configurations (`kafka-kraft.yaml`) and topic initialization (`topic-init.yaml`).
+*   **03-producer**: Python-based Kafka producer application.
+    *   `app.py`: Logic to send JSON messages with timestamps to the Kafka topic.
+    *   `Dockerfile`: Build instructions for the producer image.
+*   **04-consumer**: Python-based Kafka consumer application.
+    *   `app.py`: Logic to subscribe to the topic and print received messages.
+    *   `Dockerfile`: Build instructions for the consumer image.
+*   `deployments.yaml`: Kubernetes deployment and service definitions for producer and consumer.
+*   **scripts**: Helper scripts for verification (`verify.sh`) and cleanup (`cleanup.sh`).
+*   **start-lab.ps1**: PowerShell script to deploy the entire lab (Windows).
+*   **verify-lab.ps1**: PowerShell script to verify the deployment (Windows).
+
+## Code Review
+### Producer (`03-producer/app.py`)
+-   Uses `confluent_kafka` library.
+-   Connects to Kafka using `KAFKA_BOOTSTRAP_SERVERS` environment variable.
+-   Sends a JSON payload containing `id`, `message`, and `timestamp` every 5 seconds.
+-   Implements a delivery report callback to confirm message receipt.
+
+### Consumer (`04-consumer/app.py`)
+-   Uses `confluent_kafka` library.
+-   configured with `auto.offset.reset='earliest'` to read from the beginning.
+-   Continuously polls for messages and prints the decoded value to stdout.
+-   Handles `_PARTITION_EOF` gracefully.
+
+## Test Results
+Verification was performed on the existing deployment.
+
+**Namespace Status:**
+`kafka-lab` is Active.
+
+**Pod Status:**
+*   Kafka Broker: Running
+*   Producer: Running
+*   Consumer: Running
+
+**Service Status:**
+`kafka-svc` is available on ports 9092/9093.
+
+**Log Verification:**
+*   **Producer**: Successfully connecting to bootstrap servers and entering the production loop (`Starting Producer Loop...`).
+*   **Consumer**: Successfully polling and receiving messages.
+
+## Phases
+1. **Preparation**: Creating namespace.
+2. **Kafka**: Deploying KRaft-mode Kafka.
+3. **Producer**: Sending JSON messages.
+4. **Consumer**: Receiving and logging messages.
+5. **Validation**: kubectl inspection.
+6. **Cleanup**: Resource removal.
+
+## Quick Start
+## Quick Start
+
+### Windows (PowerShell)
+```powershell
+# Phase 1-4: Start the Lab
+.\start-lab.ps1
+
+# Phase 5: Verify
+.\verify-lab.ps1
+```
+
+### Linux/Mac (Bash)
+```bash
+# Phase 1 & 2
+kubectl apply -f 01-prep/namespace.yaml
+kubectl apply -f 02-kafka/kafka-kraft.yaml
+kubectl apply -f 02-kafka/topic-init.yaml
+
+# Phase 3 & 4 (After building images)
+docker build -t kafka-producer:latest 03-producer
+docker build -t kafka-consumer:latest 04-consumer
+kubectl apply -f 04-consumer/deployments.yaml
+
+# Phase 5
+bash scripts/verify.sh
+```
