@@ -15,18 +15,8 @@ spec:
     spec:
       containers:
         - name: producer
-          image: apache/kafka:3.7.0
-          command:
-            - /bin/bash
-            - -c
-            - |
-              echo "Waiting for Kafka..."
-              sleep 10
-              echo "Starting Producer Loop..."
-              seq 1 10000 | while read i; do
-                echo "Message $i from producer" | /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC
-                sleep 5
-              done
+          image: kafka-producer:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka-svc.kafka-lab.svc.cluster.local:9092"
@@ -50,15 +40,8 @@ spec:
     spec:
       containers:
         - name: consumer
-          image: apache/kafka:3.7.0
-          command:
-            - /bin/bash
-            - -c
-            - |
-              echo "Waiting for Kafka..."
-              sleep 10
-              echo "Starting Consumer..."
-              /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC --from-beginning
+          image: kafka-consumer:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka-svc.kafka-lab.svc.cluster.local:9092"

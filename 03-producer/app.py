@@ -6,9 +6,9 @@ import socket
 
 def delivery_report(err, msg):
     if err is not None:
-        print(f'Message delivery failed: {err}')
+        print(f'Message delivery failed: {err}', flush=True)
     else:
-        print(f'Message delivered to {msg.topic()} [{msg.partition()}]')
+        print(f'Message delivered to {msg.topic()} [{msg.partition()}]', flush=True)
 
 def main():
     bootstrap_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'kafka-svc.kafka-lab.svc.cluster.local:9092')
@@ -21,7 +21,7 @@ def main():
 
     producer = Producer(conf)
 
-    print(f"Producer starting. Connecting to {bootstrap_servers}, topic: {topic}")
+    print(f"Producer starting. Connecting to {bootstrap_servers}, topic: {topic}", flush=True)
     
     count = 0
     while True:

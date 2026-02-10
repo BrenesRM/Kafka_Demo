@@ -32,6 +32,14 @@ kubectl exec -n kube-system rescue-pod -- nsenter -t 1 -m -u -n -i systemctl res
 **Cause:** Windows (CRLF) line endings in `.sh` files.
 **Fix:** Convert to LF using `dos2unix` or a text editor.
 
+## Empty Logs in Kubernetes (Python)
+**Symptom:** `kubectl logs` shows no output even if the pod is running.
+**Cause:** Python stdout/stderr buffering.
+**Fix:** 
+1. Set environment variable `PYTHONUNBUFFERED=1` in the Dockerfile.
+2. Use `flush=True` in print statements: `print("message", flush=True)`.
+3. Run with `python -u app.py`.
+
 ## PowerShell Command Chaining
 **Symptom:** `InvalidEndOfLine` errors.
 **Cause:** using `&&` in older PowerShell versions.

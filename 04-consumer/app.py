@@ -16,7 +16,7 @@ def main():
     consumer = Consumer(conf)
     consumer.subscribe([topic])
 
-    print(f"Consumer starting. Connecting to {bootstrap_servers}, topic: {topic}")
+    print(f"Consumer starting. Connecting to {bootstrap_servers}, topic: {topic}", flush=True)
 
     try:
         while True:
@@ -31,7 +31,7 @@ def main():
                     print(f"Consumer error: {msg.error()}")
                     break
 
-            print(f"Received message: {msg.value().decode('utf-8')}")
+            print(f"Received message: {msg.value().decode('utf-8')}", flush=True)
     except KeyboardInterrupt:
         pass
     finally:

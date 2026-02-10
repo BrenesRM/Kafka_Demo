@@ -50,8 +50,8 @@ Verification was performed on the existing deployment.
 JMX Metrics are enabled on port 9997 and integrated with the UI.
 
 **Log Verification:**
-*   **Producer**: Successfully connecting to bootstrap servers and entering the production loop (`Starting Producer Loop...`).
-*   **Consumer**: Successfully polling and receiving messages.
+-   **Producer**: Successfully connecting to bootstrap servers and entering the production loop. Logs are visible thanks to `PYTHONUNBUFFERED=1` and `flush=True`.
+-   **Consumer**: Successfully polling and receiving JSON messages. Verified end-to-end message flow from producer to consumer.
 
 ## Phases
 1. **Preparation**: Creating namespace.
@@ -81,6 +81,9 @@ JMX Metrics are enabled on port 9997 and integrated with the UI.
 > kubectl port-forward svc/kafka-ui-svc 8080:8080 -n kafka-lab
 > ```
 > Then access it at [http://localhost:8080](http://localhost:8080).
+
+> [!NOTE]
+> **Log Visibility**: To ensure logs are visible in real-time, the Python applications are configured with unbuffered output.
 
 ### Linux/Mac (Bash)
 ```bash
