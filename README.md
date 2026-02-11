@@ -3,6 +3,8 @@
 ## Overview
 This lab demonstrates a local Kafka deployment on Kubernetes using Docker Desktop.
 
+For detailed architecture documentation following ISO 15288, Arcadia, and ISO 42010 standards, see: [Acrchitecture_document.md](./Acrchitecture_document.md).
+
 ## The Shared Responsibility Model
 In a healthy Kafka ecosystem, responsibilities should be split based on Infrastructure (The Pipeline) vs. Data (The Water).
 
