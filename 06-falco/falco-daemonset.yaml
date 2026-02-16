@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: falco
+  namespace: kafka-lab
+  labels:
+    app: falco
+spec:
+  selector:
+    matchLabels:
+      app: falco
+  template:
+    metadata:
+      labels:
+        app: falco
+    spec:
+      serviceAccountName: falco
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+      containers:
+        - name: falco
+          image: falcosecurity/falco:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          args:
+            - "/usr/bin/falco"
+          env:
+            - name: FALCO_DRIVER_LOADER
+              value: "modern_bpf"
+            - name: FALCO_BPF_PROBE
+              value: ""
+            - name: FALCO_JSON_OUTPUT
+              value: "true"
+            - name: FALCO_LOG_STDERR
+              value: "true"
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-socket
+            - mountPath: /etc/falco/falco_rules.local.yaml
+              name: config-volume
+              subPath: falco_rules.local.yaml
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: config-volume
+          configMap:
+            name: falco-config
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: falco
+  namespace: kafka-lab
+  labels:
+    app: falco
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: falco
+  labels:
+    app: falco
+rules:
+  - apiGroups: [""]
+    resources:
+      [
+        "pods",
+        "namespaces",
+        " replicationcontrollers",
+        "services",
+        "events",
+        "limitranges",
+        "resourcequotas",
+        "nodes",
+      ]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs", "jobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions"]
+    resources: ["daemonsets", "deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: falco
+  labels:
+    app: falco
+subjects:
+  - kind: ServiceAccount
+    name: falco
+    namespace: kafka-lab
+roleRef:
+  kind: ClusterRole
+  name: falco
+  apiGroup: rbac.authorization.k8s.io

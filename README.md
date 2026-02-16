@@ -47,10 +47,30 @@ The project is organized into the following directories:
 *   **04-consumer**: Python-based Kafka consumer application.
     *   `app.py`: Logic to subscribe to the topic and print received messages.
     *   `Dockerfile`: Build instructions for the consumer image.
+*   **05-opa**: Open Policy Agent resources.
+    *   `*.rego`: Static analysis policies for Kubernetes and Docker.
+    *   `run-opa-checks.ps1`: Script to execute compliance checks.
+*   **06-falco**: Falco runtime security resources.
+    *   `falco-daemonset.yaml`: DaemonSet for deploying Falco (requires eBPF support).
+    *   `falco-config.yaml`: Configuration and custom rules.
+*   **security-reports**: Generated security compliance reports.
 *   `deployments.yaml`: Kubernetes deployment and service definitions for producer and consumer.
 *   **scripts**: Helper scripts for verification (`verify.sh`) and cleanup (`cleanup.sh`).
 *   **start-lab.ps1**: PowerShell script to deploy the entire lab (Windows).
 *   **verify-lab.ps1**: PowerShell script to verify the deployment (Windows).
+
+## Security
+The project includes both static and runtime security checking mechanisms.
+
+### Static Analysis (OPA)
+We use [Open Policy Agent](https://www.openpolicyagent.org/) to audit manifests and Dockerfiles.
+*   **Run Checks:** `.\05-opa\run-opa-checks.ps1`
+*   **Latest Report:** [security-reports/opa_report.md](./security-reports/opa_report.md)
+
+### Runtime Security (Falco)
+We use [Falco](https://falco.org/) for runtime anomaly detection (e.g., shell in containers).
+*   **Deployment:** `kubectl apply -f 06-falco/`
+*   **Status:** Currently blocked on Docker Desktop/WSL2 due to missing kernel headers. See [security-reports/falco_report.md](./security-reports/falco_report.md) for details.
 
 ## Code Review
 ### Producer (`03-producer/app.py`)
